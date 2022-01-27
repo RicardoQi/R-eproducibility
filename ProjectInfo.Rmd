@@ -1,0 +1,87 @@
+---
+title: "R-eproducibility"
+author: "RicardoQi"
+date: "January 25th, 2022"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+student#: '20084324'
+---
+## Project Info
+This project is written on January 25th, 2022. The project is cloned to [RicardoQi Github homepage](https://github.com/RicardoQi/R-eproducibility.git)
+
+## Working Report in Steps
+The csv file is loaded using the following pathway and named as Mydata in the data base. 
+```{r}
+Mydata <- read.csv("C:\\Users\\qi199\\Documents\\R-eproducibility\\InputData\\FallopiaData.csv")
+```
+***
+Then, rows with "Total" values less than 60 are removed.
+```{r}
+Mydata1 <- subset(Mydata, Total>60)
+```
+***
+Mydata is rearranged and the order of columns are altered, and only four of the columns are shown.
+```{r}
+Mydata2 <- subset(Mydata1, select = c(Total, Taxon, Scenario, Nutrients))
+```
+***
+A new column "TotalG" is created to replace the "Total" column with gram becomes the measuring unit instead of mg. 
+```{r}
+Mydata2$TotalG <- Mydata2$Total / 1000 
+Mydata2 <- Mydata2[,c(5,2:4)] 
+```
+
+***
+The following function is written to do simple calculations based on data and operation prompted by the user. 
+
+The function is named ctm(). It asks for entering two inputs from the user. The first one is considered vector and converted to numeric type for further calculations, and the second variable is a string that help determine the operation later.
+```{r}
+ctm <- function() {
+  var1 <- readline("Enter the sequence of numbers separated by comma : ")
+  var2 <- readline("Enter the operation : ")
+  var1 <- strsplit(var1,',')
+  var1 <- as.numeric(unlist(var1))
+  
+  avg <- mean(var1)
+  ttl <- sum(var1)
+  cnt <- table(var1)
+  
+  if (var2 == "Average") {
+    print(avg)
+  } else if (var2 == "Sum") {
+    print(ttl)
+  } else if (var2 == "Observations") {
+    print(cnt)
+  } else {
+    print("Error: Wrong operation!")
+  }
+  
+}
+```
+avg, ttl, and cnt are three options that the user can choose to control their data in vector #1. If the user enters other content, the function would give error. 
+
+***
+The total number of observations in the 'Taxon' column is calculated using dplyr. 
+```{r}
+num_obs <- function(){
+  library("dplyr")
+  Mydata2 %>% count(Taxon)
+}
+num_obs()
+```
+***
+The average "TotalG" for each of the two Nutrient concentrations is calculated using the aggregate() function.
+```{r}
+avg_nut <- function(){
+  aggregate(Mydata2[, 1], list(Mydata2$Nutrients), mean)
+}
+avg_nut()
+```
+***
+Finally, the newly synthesized data is saved to a new csv file named WrangledData.csv.
+```{r}
+write.csv(Mydata2, "C:\\Users\\qi199\\Documents\\R-eproducibility\\Output\\WrangledData.csv", row.names = FALSE)
+```
+
