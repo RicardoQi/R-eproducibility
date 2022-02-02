@@ -1,0 +1,9 @@
+#!/bin/bash
+# Script to do the comparison of digits
+for var in {1..20}; do
+	if [[ $var -gt 9 ]]; then
+		echo "$var is a double-digit number"
+	else
+		echo "$var is a single-digit number"
+	fi
+done
