@@ -1,0 +1,57 @@
+---
+title: "Regex"
+author: "Runzi Qi"
+date: "2022/2/2"
+output: html_document
+---
+This program is written by RicardoQi on February 2nd, 2022 as R-egex assignment. The code applies both dplyr() and stringr() to help organize data. 
+```{r}
+library(dplyr)
+library(stringr)
+```
+The data set is loaded.
+```{r}
+#Read the csv file
+MData<- read.csv("C:\\Users\\qi199\\Documents\\R-eproducibility\\InputData\\measurements.csv")
+```
+Then, the dplyr() function is used to organize the order of columns and create a new column named Sp.
+```{r}
+#Mutate the data to create a new column named Sp
+MData <- MData %>%
+  mutate(Sp = Organism)
+```
+Next, the former Organism column is divided into two parts, and the first half is abbreviated using sub().
+```{r}
+#Converting the first half of species name
+g <- sub("(^.)", "\\1.", MData$Sp)
+g <- word(g, 1, sep = fixed(' '))
+g <- str_sub(g, start=1, end=2)
+```
+Another half of the name is separated, but the contents are unchanged.
+```{r}
+#Obtain the other half of name
+f <- sub("(^.)", "\\1.", MData$Sp)
+f <- word(f, 2, sep = fixed(' '))
+```
+The two parts of newly-synthesized Sp is concatenated using paste(). 
+```{r}
+#Concatenate two variables together to obtain final names
+MData$Sp <- paste(g,f)
+```
+The Sp column is moved to the first column to replace the Organism column, then the latter is removed. 
+```{r}
+#Moving Sp column to the first and generate the table
+MData1 <- MData %>%
+  select(Sp, everything())
+  select(MData1, -2)
+```
+The csv file output is saved.
+```{r}
+#Export the csv file
+write.csv(MData1, "C:\\Users\\qi199\\Documents\\R-eproducibility\\Output\\MeasShort.csv" )
+```
+
+  
+  
+```
+
